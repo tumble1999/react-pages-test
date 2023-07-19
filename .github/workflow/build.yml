@@ -4,9 +4,32 @@ on:
     branches:
       - master
       -
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        node-version: "18"
+      - run: npm ci
+      - run: npm run build
+      - run: |
+          chmod -c -R +rX "build/" | while read line; do
+            echo "::warning title="Invalid file permissions automatically fixed::$line"
+          done
+      - uses: actions/upload-pages-artifact@v2
+        path: "build/"
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v2
