@@ -16,7 +16,7 @@ jobs:
       - run: npm run build
       - run: |
           chmod -c -R +rX "build/" | while read line; do
-            echo "::warning title="Invalid file permissions automatically fixed::$line"
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
           done
       - uses: actions/upload-pages-artifact@v2
         with:
